@@ -24,16 +24,18 @@
       href="https://cdn.datatables.net/v/bs4-4.1.1/dt-1.10.18/b-1.5.6/b-flash-1.5.6/fh-3.1.4/r-2.2.2/sc-2.0.0/datatables.min.css"
     />
 
-    <title>Document</title>
+    <title>Paystack Bakery</title>
   </head>
   <body>
     <div class="container">
       <header>
-        <h1 style="margin-bottom: 0">RESTful APIs Example</h1>
+        <h1 style="margin-bottom: 0">Paystack Bakery</h1>
+        <hr />
         <a href="{% url 'home' %}">home</a> /
         <a href="{% url 'suppliers' %}">suppliers</a> /
         <a href="{% url 'create_recipient' %}">create supplier</a> /
         <a href="{% url 'create_transfer' %}">Pay a supplier</a>
+        <hr />
       </header>
 
       {% block content %} {% endblock %}

@@ -9,6 +9,8 @@ urlpatterns = [
     path('create-recipient/', views.create_recipient, name='create_recipient'),
     path('update-recipient/<int:id>/', views.update_recipient,
          name='update_recipient'),
+    path('delete-recipient/<int:id>/', views.delete_recipient,
+         name='delete_recipient'),
     path('create-transfer/', views.create_transfer,
          name='create_transfer'),
 

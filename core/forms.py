@@ -1,6 +1,7 @@
 from django import forms
 import requests
-from .request_util import get_all_recipients, get_recipient_endpoint, get_balance_endpoint, set_header, get_transfer_endpoint
+from .request_util import get_all_recipients, get_recipient_endpoint, get_balance_endpoint,\
+    set_header, get_transfer_endpoint, get_all_recipients_by_id
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, Submit, HTML, Button, Row, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText, FormActions
@@ -85,12 +86,13 @@ class CreateRecipientForm(forms.Form):
 
 class UpdateRecipientForm(forms.Form):
     # text_input = forms.CharField()
+
     name = forms.CharField(label='The supplier name',
-                           max_length=100, required=True)
+                           max_length=100, required=True,)
     description = forms.CharField(
         label='description', max_length=100, help_text='service provided by the supplier', required=False)
-    account_number = forms.CharField(
-        label='account number', max_length=20, min_length=10, required=False)
+    # account_number = forms.CharField(
+    #     label='account number', max_length=20, min_length=10, required=False)
 
     # bank_name = forms.CharField(
     #     label='Bank name', max_length=50, initial='Access Bank')
@@ -104,7 +106,7 @@ class UpdateRecipientForm(forms.Form):
 
         name = self.cleaned_data['name']
         description = self.cleaned_data['description']
-        account_number = self.cleaned_data['account_number']
+        # account_number = self.cleaned_data['account_number']
         # bank_name = self.cleaned_data['bank_name']
         # currency = self.cleaned_data['currency']
 
@@ -112,7 +114,7 @@ class UpdateRecipientForm(forms.Form):
             "type": "nuban",
             "name": name,
             "description": description,
-            "account_number": account_number,
+            # "account_number": account_number,
             "bank_code": "044",
             "currency": "NGN",
         }
