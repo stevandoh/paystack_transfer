@@ -1,25 +1,38 @@
 from django.shortcuts import render
 
-from .forms import CreateRecipientForm
+from .forms import CreateRecipientForm,  UpdateRecipientForm, CreateTransferForm
 from django.shortcuts import render
 from django.conf import settings
-import requests
+from .request_util import get_all_recipients, get_recipient_endpoint, set_header, get_balance_endpoint, get_transfer_endpoint
 from django.shortcuts import redirect
 from django.http import HttpResponse
+from django.urls import reverse_lazy
+import requests
+
+headers = set_header()
+balance_endpoint = get_balance_endpoint()
+transfer_endpoint = get_transfer_endpoint()
+recipient_endpoint = get_recipient_endpoint()
+response = requests.get(balance_endpoint, headers=headers)
 
 
 def home(request):
-    headers = {
-        'Authorization': 'Bearer sk_test_a362e380363bea61d841910010001d410bac1274',
-    }
-    response = requests.get('https://api.paystack.co/balance', headers=headers)
+    # headers = set_header()
+    # balance_endpoint = get_balance_endpoint()
+    # transfer_endpoint = get_transfer_endpoint()
+    response = requests.get(balance_endpoint, headers=headers)
+    transfer_response = requests.get(
+        transfer_endpoint, headers=headers)
 
     if response.status_code == 200:
         print('Success!')
     elif response.status_code == 404:
         print('Not Found.')
     balance_request = response.json()
+    transfer_request = transfer_response.json()
     data = balance_request['data']
+    transfer_data = transfer_request['data']
+    trial = get_all_recipients()
 
     # amount = balance_request['balance']
     # currency = balance_request['currency']
@@ -27,7 +40,9 @@ def home(request):
     return render(request, 'core/home.html', {
         'message': balance_request['message'],
         'balance': data[0]['balance'],
-        'currency': data[0]['currency']
+        'currency': data[0]['currency'],
+        'data': transfer_data,
+        'trial': trial
 
 
     })
@@ -36,11 +51,8 @@ def home(request):
 def get_recipients(request):
 
     result = {}
-    url = "https://api.paystack.co/transferrecipient"
-    headers = {
-        'Authorization': "Bearer sk_test_a362e380363bea61d841910010001d410bac1274", }
 
-    response = requests.get(url, headers=headers)
+    response = requests.get(recipient_endpoint, headers=headers)
 
     if response.status_code == 200:
         print('success')
@@ -56,7 +68,8 @@ def get_recipients(request):
     # return result
 
     return render(request, 'core/recipients.html', {
-        'data': result['data']
+        'data': result['data'],
+
     })
 
 
@@ -75,17 +88,41 @@ def create_recipient(request):
     return render(request, 'core/recipient_form.html', {'form': form, 'result': result})
 
 
-# def github(request):
-    # search_result = {}
-    # if 'username' in request.GET:
-    #     username = request.GET['username']
-    #     url = 'https://api.github.com/users/%s' % username
-    #     response = requests.get(url)
-    #     search_was_successful = (response.status_code == 200)  # 200 = SUCCESS
-    #     search_result = response.json()
-    #     search_result['success'] = search_was_successful
-    #     search_result['rate'] = {
-    #         'limit': response.headers['X-RateLimit-Limit'],
-    #         'remaining': response.headers['X-RateLimit-Remaining'],
-    #     }
-    # return render(request, 'core/github.html', {'search_result': search_result})
+def update_recipient(request, id):
+    form = UpdateRecipientForm(request.POST)
+    result = ''
+    if form.is_valid():
+        result += form.update_recipient(id)['message']
+        status = form.update_recipient(id)['status']
+        if status:
+            return redirect('suppliers')
+        else:
+            return render(request, 'core/edit_recipient.html', {'form': form, 'result': result})
+    else:
+        form = UpdateRecipientForm()
+    return render(request, 'core/edit_recipient.html', {'form': form, 'result': result})
+
+
+def create_transfer(request):
+    form = CreateTransferForm(request.POST)
+    result = ''
+    if form.is_valid():
+
+        status = form.save_transfer()['status']
+        if status:
+            return redirect('home')
+        else:
+            result += form.save_transfer()['message']
+            return render(request, 'core/transfer_form.html', {'form': form, 'result': result})
+    else:
+        form = CreateTransferForm()
+    return render(request, 'core/transfer_form.html', {'form': form, 'result': result})
+
+
+# headers = {
+#     'Authorization': 'Bearer sk_test_a362e380363bea61d841910010001d410bac1274',
+#     'Content-Type': 'application/json',
+# }
+
+# response = requests.delete(
+#     'https://api.paystack.co/transferrecipient/2295004', headers=headers)
