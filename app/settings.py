@@ -26,7 +26,7 @@ SECRET_KEY = 'wd_-olw#og9^(=w^k@2!&539^$9@d33-2^w-u$cuaqk0m69m19'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['baker-transfer.herokuapp.com', ]
+ALLOWED_HOSTS = ['baker-transfer.herokuapp.com', '*']
 
 
 # Application definition
