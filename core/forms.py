@@ -43,11 +43,6 @@ class CreateRecipientForm(forms.Form):
 
     def save_recipient(self):
 
-        # headers = {
-        #     'Authorization': 'Bearer sk_test_a362e380363bea61d841910010001d410bac1274',
-        #     'Content-Type': 'application/json',
-        # }
-
         result = ''
 
         name = self.cleaned_data['name']
@@ -141,6 +136,7 @@ class UpdateRecipientForm(forms.Form):
 class CreateTransferForm(forms.Form):
 
     recipients = get_all_recipients()
+    # balance
 
     # source, amount, currency, reason, recipient
     # text_input = forms.CharField()
