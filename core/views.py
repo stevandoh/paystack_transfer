@@ -145,15 +145,4 @@ def delete_recipient(request, id):
             result += delete_response['message']
             return render(request, 'core/transfer_form.html', {'result': result})
 
-    # context = {'movie': movie,
-    #            'creator': creator,
-    #            }
-
     return render(request, 'core/delete_recipient.html', {'data': delete_response})
-# headers = {
-#     'Authorization': 'Bearer sk_test_a362e380363bea61d841910010001d410bac1274',
-#     'Content-Type': 'application/json',
-# }
-
-# response = requests.delete(
-#     'https://api.paystack.co/transferrecipient/2295004', headers=headers)

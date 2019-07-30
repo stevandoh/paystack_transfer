@@ -81,7 +81,9 @@ def get_all_recipients_by_id():
         for datum in data:
             # dicts[i] = values[i]
             key_value['%s' % (datum['id'])
-                      ] = {'name': datum['name'], 'account_number': datum['details']['account_number'], 'bank_name': datum['details']['bank_name']}
+                      ] = {'name': datum['name'],
+                           'account_number': datum['details']['account_number'],
+                           'bank_name': datum['details']['bank_name']}
             #  {'%s (%s-%s)' % (
             # datum['name'], datum['details']['account_number'], datum['details']['bank_name']), datum['id']}
             # name = '%s (%s)' % (datum.name, datum.account_number)
@@ -92,5 +94,17 @@ def get_all_recipients_by_id():
 
     return key_value
 
+
+def get_balance():
+    response = requests.get(get_balance_endpoint(), headers=set_header())
+    balance_request = response.json()
+    data = balance_request['data']
+    return data[0]['balance']
+
+
 # print(get_recipient_endpoint())
 # print(get_transfer_endpoint())
+print(get_balance())
+balance = int(get_balance()) - 50
+print(balance)
+print(get_all_recipients())

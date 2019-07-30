@@ -1,7 +1,7 @@
 from django import forms
 import requests
 from .request_util import get_all_recipients, get_recipient_endpoint, get_balance_endpoint,\
-    set_header, get_transfer_endpoint, get_all_recipients_by_id
+    set_header, get_transfer_endpoint, get_all_recipients_by_id, get_balance
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, Submit, HTML, Button, Row, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText, FormActions
@@ -136,8 +136,8 @@ class UpdateRecipientForm(forms.Form):
 class CreateTransferForm(forms.Form):
 
     recipients = get_all_recipients()
-    # balance
-
+    balance = get_balance()
+    authorized_max = int(balance) - 50
     # source, amount, currency, reason, recipient
     # text_input = forms.CharField()
 
@@ -145,10 +145,12 @@ class CreateTransferForm(forms.Form):
         tuple([x, x]) for x in [k for k in recipients]
     ]
 
+    current_balance = forms.CharField(
+        label='Current Balance', disabled=True, initial=str(balance))
     reason = forms.CharField(
         label='Reason', max_length=100, help_text='reason of the payment')
     amount = forms.IntegerField(
-        label='Amount', max_value=1000000, min_value=100, required=True, help_text='Minimum transfer amount is NGN 100')
+        label='Amount', max_value=authorized_max, min_value=100, required=True, help_text='Minimum transfer amount is NGN 100')
 
     currency = forms.CharField(
         label='Currency', max_length=3, initial='NGN', disabled=True)
