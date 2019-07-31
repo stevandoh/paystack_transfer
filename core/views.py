@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from .forms import CreateRecipientForm,  UpdateRecipientForm, CreateTransferForm
+from .forms import CreateRecipientForm,  UpdateRecipientForm, CreateTransferForm, CreateTransferBySupplierForm
 from django.shortcuts import render
 from django.conf import settings
 from .request_util import get_all_recipients, get_recipient_endpoint, set_header, get_balance_endpoint,\
@@ -124,6 +124,23 @@ def create_transfer(request):
             return render(request, 'core/transfer_form.html', {'form': form, 'result': result})
     else:
         form = CreateTransferForm()
+    return render(request, 'core/transfer_form.html', {'form': form, 'result': result})
+
+
+def create_transfer_by_id(request, id):
+    form = CreateTransferBySupplierForm(request.POST)
+
+    result = ''
+    if form.is_valid():
+
+        status = form.save_transfer(id)['status']
+        if status:
+            return redirect('home')
+        else:
+            result += form.save_transfer(id)['message']
+            return render(request, 'core/transfer_form.html', {'form': form, 'result': result})
+    else:
+        form = CreateTransferBySupplierForm()
     return render(request, 'core/transfer_form.html', {'form': form, 'result': result})
 
 

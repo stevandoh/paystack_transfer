@@ -7,7 +7,7 @@
       <tr>
         <th>Amount</th>
         <th>Date</th>
-        <th>Reason</th>
+        <th>Transfer code</th>
         <th>Status</th>
         <th>Recipient</th>
         <!-- <th>Account Number</th> -->
@@ -20,7 +20,7 @@
       <tr>
         <td>{{ datum.currency }} {{ datum.amount }}</td>
         <td>{{ datum.createdAt }}</td>
-        <td>{{ datum.reason }}</td>
+        <td>{{ datum.transfer_code }}</td>
         <td>{{ datum.status }}</td>
         <td>
           {{ datum.recipient.name }}

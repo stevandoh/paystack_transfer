@@ -1,7 +1,7 @@
 from django import forms
 import requests
 from .request_util import get_all_recipients, get_recipient_endpoint, get_balance_endpoint,\
-    set_header, get_transfer_endpoint, get_all_recipients_by_id, get_balance
+    set_header, get_transfer_endpoint, get_all_recipients_by_id, get_balance, get_recipient_by_id
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, Submit, HTML, Button, Row, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText, FormActions
@@ -187,6 +187,74 @@ class CreateTransferForm(forms.Form):
             "amount": amount,
             "reason": reason,
             "recipient": recipients[recipient_detail],
+        }
+
+        # response = requests.get(url, headers=headers)
+
+        data = json.dumps(payload)
+
+        response = requests.post(
+            transfer_endpoint, headers=headers, data=data)
+
+        print(response.json())
+        result = response.text
+        print(json.loads(result))
+        print(response.status_code)
+
+        if response.status_code == 200:  # SUCCESS
+            # result = response.json()
+            print("other reuslt",  result)
+
+        return json.loads(result)
+
+
+class CreateTransferBySupplierForm(forms.Form):
+
+    recipients = get_all_recipients()
+    balance = get_balance()
+    authorized_max = int(balance) - 50
+
+    current_balance = forms.CharField(
+        label='Current Balance', disabled=True, initial=str(balance))
+    reason = forms.CharField(
+        label='Reason', max_length=100, help_text='reason of the payment')
+    amount = forms.IntegerField(
+        label='Amount', max_value=authorized_max, min_value=100, required=True, help_text='Minimum transfer amount is NGN 100')
+
+    currency = forms.CharField(
+        label='Currency', max_length=3, initial='NGN', disabled=True)
+
+    # if len(RECIPIENT_CHOICES) > 0:
+
+    #     recipient = forms.CharField(
+    #         label='Select the supplier', widget=forms.Select(choices=RECIPIENT_CHOICES))
+    # else:
+
+    # Uni-form
+    helper = FormHelper()
+    helper.form_class = 'form-horizontal'
+    helper.layout = Layout(
+        Field('text_input', css_class='input-xlarge'),
+        FormActions(
+            Submit('save_changes', 'Save', css_class="btn-primary"),
+            Submit('cancel', 'Cancel'),
+        )
+    )
+
+    def save_transfer(self, id):
+
+        result = ''
+
+        reason = self.cleaned_data['reason']
+        amount = self.cleaned_data['amount']
+
+        recipient_id_dict = get_recipient_by_id()
+
+        payload = {
+            "source": "balance",
+            "amount": amount,
+            "reason": reason,
+            "recipient": recipient_id_dict[id],
         }
 
         # response = requests.get(url, headers=headers)
